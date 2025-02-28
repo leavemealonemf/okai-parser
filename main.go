@@ -42,32 +42,16 @@ func handleServe(conn net.Conn) {
 			fmt.Println("Received data err:", err.Error())
 			break
 		}
-		// fmt.Println("Received message from OKAI:", string(buff))
-
 		msg := string(buff)
-
 		pck := okaiparsetools.CutPacket(msg, "$")
-
-		// if err != nil {
-		// 	log.Println(err.Error())
-		// 	continue
-		// }
-
 		params := okaiparsetools.SplitParams(pck, ",")
+
 		fmt.Println("-------------------------------")
 		fmt.Println("Cutted pck:", pck)
 		fmt.Println("Splitted params:", params)
 
 		parsed, _ := okaiparser.ParseParams(params)
 		fmt.Println(parsed)
-		// if strings.Contains(msg, "+ACK:GTHBD") {
-		// 	log.Println("In heartbeat logic")
-		// 	packetParts := strings.Split(msg, ",")
-		// 	fmt.Println(packetParts)
-		// 	req := fmt.Sprintf("+SACK:GTHBD,%s,%s$", packetParts[1], "0097")
-		// 	conn.Write([]byte(req))
-		// 	fmt.Println("send heartbeat ack")
-		// }
 	}
 }
 

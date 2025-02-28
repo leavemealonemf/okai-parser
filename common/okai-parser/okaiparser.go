@@ -52,7 +52,7 @@ func ParseParams(params []string) (string, error) {
 			"ecuInfo":                   params[33],
 			"eScootBatteryPercentage":   params[34],
 			"genTime":                   params[35],
-			"totalCount":                params[36 : len(params)-1],
+			"totalCount":                params[36],
 		}
 
 		data, _ := json.Marshal(packet)
