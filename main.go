@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 )
 
 const (
@@ -38,6 +39,22 @@ func handleServe(conn net.Conn) {
 			break
 		}
 		fmt.Println("Received message from OKAI:", string(buff))
+
+		msg := string(buff)
+
+		if msg[len(msg)-1] != '$' {
+			log.Println("Broken package wothout $. Continue...")
+			continue
+		}
+
+		if strings.Contains(msg, "+ACK:GTHBD") {
+			log.Println("In heartbeat logic")
+			packetParts := strings.Split(msg, ",")
+			fmt.Println(packetParts)
+			req := fmt.Sprintf("+SACK:GTHBD,%s,%s$", packetParts[1], "0097")
+			conn.Write([]byte(req))
+			fmt.Println("send heartbeat ack")
+		}
 	}
 }
 
