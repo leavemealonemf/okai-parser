@@ -61,6 +61,7 @@ func ParseParams(params []string) (string, error) {
 		rawEcuInfo := params[33]
 		ecuInfo := parseEcu(rawEcuInfo)
 		packet["ecuInfo"] = ecuInfo
+		packet["gnssInfo"] = params[17]
 
 		data, _ := json.Marshal(packet)
 		return string(data), nil
