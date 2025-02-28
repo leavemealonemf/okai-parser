@@ -46,9 +46,9 @@ func handleServe(conn net.Conn) {
 		pck := okaiparsetools.CutPacket(msg, "$")
 		params := okaiparsetools.SplitParams(pck, ",")
 
-		fmt.Println("-------------------------------")
-		fmt.Println("Cutted pck:", pck)
-		fmt.Println("Splitted params:", params)
+		// fmt.Println("-------------------------------")
+		// fmt.Println("Cutted pck:", pck)
+		// fmt.Println("Splitted params:", params)
 
 		parsed, _ := okaiparser.ParseParams(params)
 		fmt.Println(parsed)
@@ -62,6 +62,12 @@ func abortTCP(conn *Connection) {
 	// }
 }
 
+func oneStepParse(pck string) {
+	params := okaiparsetools.SplitParams(pck, ",")
+	data, _ := okaiparser.ParseParams(params)
+	fmt.Println(data)
+}
+
 func main() {
 	connections = make(map[string]*Connection)
 	addr := fmt.Sprintf(":%d", TCP_PORT)
@@ -73,6 +79,8 @@ func main() {
 	}
 
 	log.Println("Server started:", serve.Addr().Network())
+
+	// oneStepParse("+RESP:GTFRI,OK043A,868070043228349,zk200,,,,,0,0000000000000000000,,,,,,,,,0250,0099,04E9,08C41A65,26&99,2,41,0,52322,4022,87,0,,0,,0.0&0.00&42.50&263.13&1&1&0&0000000D0000000D011A0000&000000D10500000000060000&00000000&0&02641C1B1A1AFFFFFF7D&1&1&00000000000000,85,20250228065940,00A6$0250228065921,009D$")
 
 	for {
 		conn, err := serve.Accept()

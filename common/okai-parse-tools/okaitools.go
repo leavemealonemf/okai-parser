@@ -5,16 +5,11 @@ import (
 )
 
 func CutPacket(packet string, sep string) string {
-	pkt := make([]byte, 4096)
-
-	for i := 0; i < len(packet); i++ {
-		pkt[i] = packet[i]
-		if packet[i] == []byte(sep)[0] {
-			break
-		}
+	idx := strings.Index(packet, sep)
+	if idx == -1 {
+		return packet
 	}
-
-	return string(pkt)
+	return packet[:idx+1]
 }
 
 func SplitParams(packet string, sep string) []string {
