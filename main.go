@@ -42,8 +42,8 @@ func handleServe(conn net.Conn) {
 
 		msg := string(buff)
 
-		if msg[len(msg)-1] != '$' {
-			log.Println("Broken package wothout $. Continue...")
+		if msg[len(msg)] != '$' {
+			log.Println("Broken package without $. Continue...")
 			continue
 		}
 
