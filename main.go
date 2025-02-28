@@ -1,3 +1,6 @@
+// message type
+// message identificator (id)
+
 package main
 
 import (
@@ -5,6 +8,7 @@ import (
 	"log"
 	"net"
 	okaiparsetools "okai/common/okai-parse-tools"
+	okaiparser "okai/common/okai-parser"
 )
 
 const (
@@ -50,11 +54,12 @@ func handleServe(conn net.Conn) {
 		// }
 
 		params := okaiparsetools.SplitParams(pck, ",")
-
 		fmt.Println("-------------------------------")
 		fmt.Println("Cutted pck:", pck)
 		fmt.Println("Splitted params:", params)
 
+		parsed, _ := okaiparser.ParseParams(params)
+		fmt.Println(parsed)
 		// if strings.Contains(msg, "+ACK:GTHBD") {
 		// 	log.Println("In heartbeat logic")
 		// 	packetParts := strings.Split(msg, ",")
