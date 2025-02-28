@@ -1,17 +1,20 @@
 package okaiparsetools
 
 import (
-	"fmt"
 	"strings"
 )
 
-func CutPacket(packet string, sep string) (string, error) {
-	_, res, found := strings.Cut(packet, sep)
-	if !found {
-		return "", fmt.Errorf("failed to cut packet by sep")
+func CutPacket(packet string, sep string) string {
+	pkt := make([]byte, 4096)
+
+	for i := 0; i < len(packet); i++ {
+		pkt[i] = packet[i]
+		if packet[i] == []byte(sep)[0] {
+			break
+		}
 	}
 
-	return res, nil
+	return string(pkt)
 }
 
 func SplitParams(packet string, sep string) []string {

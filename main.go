@@ -42,12 +42,12 @@ func handleServe(conn net.Conn) {
 
 		msg := string(buff)
 
-		pck, err := okaiparsetools.CutPacket(msg, "$")
+		pck := okaiparsetools.CutPacket(msg, "$")
 
-		if err != nil {
-			log.Println(err.Error())
-			continue
-		}
+		// if err != nil {
+		// 	log.Println(err.Error())
+		// 	continue
+		// }
 
 		params := okaiparsetools.SplitParams(pck, ",")
 
