@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	BUFF_SIZE = 4096
+	BUFF_SIZE = 5000
 	TCP_PORT  = 30331
 )
 
@@ -42,10 +42,10 @@ func handleServe(conn net.Conn) {
 
 		msg := string(buff)
 
-		if msg[len(msg)] != '$' {
-			log.Println("Broken package without $. Continue...")
-			continue
-		}
+		// if msg[len(msg)] != '$' {
+		// 	log.Println("Broken package without $. Continue...")
+		// 	continue
+		// }
 
 		if strings.Contains(msg, "+ACK:GTHBD") {
 			log.Println("In heartbeat logic")
