@@ -1,7 +1,6 @@
 package okaiparser
 
 import (
-	"encoding/json"
 	"fmt"
 	okaiparsetools "okai/common/okai-parse-tools"
 	"okai/common/utils"
@@ -10,9 +9,9 @@ import (
 
 // +RESP:GTFRI,OK043A,868070043228349,zk200,,,,,0,0000000000000000000,,,,,,,,,0250,0099,04E9,08C41A65,26&99,2,41,0,52322,4022,87,0,,0,,0.0&0.00&42.50&263.13&1&1&0&0000000D0000000D011A0000&000000D10500000000060000&00000000&0&02641C1B1A1AFFFFFF7D&1&1&00000000000000,85,20250228065940,00A6$
 
-func ParseParams(params []string) (string, error) {
+func ParseParams(params []string) (string, string, map[string]interface{}, error) {
 	if len(params) == 0 {
-		return "", fmt.Errorf("Parse params failed. Zero len")
+		return "", "", nil, fmt.Errorf("Parse params failed. Zero len")
 	}
 
 	pktType, pktId := HeadInfo(params[0])
@@ -63,11 +62,10 @@ func ParseParams(params []string) (string, error) {
 		packet["ecuInfo"] = ecuInfo
 		packet["gnssInfo"] = params[17]
 
-		data, _ := json.Marshal(packet)
-		return string(data), nil
+		return pktType, pktId, packet, nil
 
 	}
-	return "", nil
+	return pktType, pktId, nil, nil
 }
 
 func HeadInfo(head string) (string, string) {

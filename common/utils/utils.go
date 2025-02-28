@@ -2,6 +2,8 @@ package utils
 
 import (
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -28,4 +30,13 @@ func BytesToHexString(bytes []byte) string {
 func HexToBytes(hexString string) []byte {
 	bytes, _ := hex.DecodeString(hexString)
 	return bytes
+}
+
+func JsonStringify(data interface{}) (string, error) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		return "", fmt.Errorf("Failed to JsonStringify")
+	}
+
+	return string(b), nil
 }

@@ -9,6 +9,7 @@ import (
 	"net"
 	okaiparsetools "okai/common/okai-parse-tools"
 	okaiparser "okai/common/okai-parser"
+	"okai/common/utils"
 )
 
 const (
@@ -17,19 +18,21 @@ const (
 )
 
 type Connection struct {
-	Device any
-	Conn   *net.Conn
+	IMEI string
+	Conn *net.Conn
 }
 
 var connections map[string]*Connection
 
 func handleServe(conn net.Conn) {
 	connection := &Connection{
-		Conn:   &conn,
-		Device: 1,
+		Conn: &conn,
+		IMEI: "",
 	}
 
 	buff := make([]byte, BUFF_SIZE)
+
+	authorized := false
 
 	defer func() {
 		abortTCP(connection)
@@ -37,37 +40,55 @@ func handleServe(conn net.Conn) {
 	}()
 
 	for {
+		if authorized && connections[connection.IMEI] == nil {
+			break
+		}
+
 		_, err := conn.Read(buff)
 		if err != nil {
 			fmt.Println("Received data err:", err.Error())
 			break
 		}
 		msg := string(buff)
+
+		if msg[0] != '+' {
+			break
+		}
+
 		fmt.Println("new message:", msg)
 		fmt.Println("--------------------------")
+
 		pck := okaiparsetools.CutPacket(msg, "$")
 		params := okaiparsetools.SplitParams(pck, ",")
 
-		// fmt.Println("-------------------------------")
-		// fmt.Println("Cutted pck:", pck)
-		// fmt.Println("Splitted params:", params)
-
-		parsed, _ := okaiparser.ParseParams(params)
-		fmt.Println(parsed)
+		_, _, parsed, _ := okaiparser.ParseParams(params)
+		if parsed != nil {
+			if !authorized {
+				imei := parsed["imei"].(string)
+				connection.IMEI = imei
+				connections[imei] = connection
+				authorized = true
+			}
+		}
+		jsn, _ := utils.JsonStringify(parsed)
+		fmt.Println(jsn)
 	}
 }
 
 func abortTCP(conn *Connection) {
-	// do delete logic here
-	// if connections[conn.Device.IMEI] != nil {
-	// 	delete(connections, conn.Device.IMEI)
-	// }
+	if connections[conn.IMEI] != nil {
+		delete(connections, conn.IMEI)
+	}
 }
 
 func oneStepParse(pck string) {
 	params := okaiparsetools.SplitParams(pck, ",")
-	data, _ := okaiparser.ParseParams(params)
-	fmt.Println(data)
+	_, _, parsed, _ := okaiparser.ParseParams(params)
+	if parsed != nil {
+		fmt.Println(parsed["imei"])
+	}
+	jsn, _ := utils.JsonStringify(parsed)
+	fmt.Println(jsn)
 }
 
 func main() {
