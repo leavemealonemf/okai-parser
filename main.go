@@ -43,6 +43,8 @@ func handleServe(conn net.Conn) {
 			break
 		}
 		msg := string(buff)
+		fmt.Println("new message:", msg)
+		fmt.Println("--------------------------")
 		pck := okaiparsetools.CutPacket(msg, "$")
 		params := okaiparsetools.SplitParams(pck, ",")
 
