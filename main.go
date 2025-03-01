@@ -7,6 +7,7 @@ import (
 	okaiparsetools "okai/common/okai-parse-tools"
 	okaiparser "okai/common/okai-parser"
 	"okai/common/utils"
+	"time"
 )
 
 const (
@@ -59,18 +60,29 @@ func handleServe(conn net.Conn) {
 		pck := okaiparsetools.CutPacket(msg, "$")
 		params := okaiparsetools.SplitParams(pck, ",")
 
-		_, pId, parsed, _ := okaiparser.ParseParams(params)
+		pType, pId, parsed, _ := okaiparser.ParseParams(params)
 		if parsed != nil {
 			if !authorized && pId == "GTNCN" {
 				imei := parsed["imei"].(string)
 				connection.IMEI = imei
 				connections[imei] = connection
 				authorized = true
+				fmt.Println("succesfully authorized")
 			} else {
 				fmt.Println("break connection...")
 				break
 			}
 		}
+
+		// heartbeat handshake
+		if pType == "+ACK" && pId == "GTHBD" {
+			protoVer := params[1]
+			totalCount := params[6]
+			cmd := fmt.Sprintf("+SACK:GTHBD,%s,%s", protoVer, totalCount)
+			conn.Write([]byte(cmd))
+			fmt.Println("send heartbeat ack:", cmd)
+		}
+
 		jsn, _ := utils.JsonStringify(parsed)
 		fmt.Println(jsn)
 	}
@@ -93,14 +105,17 @@ func oneStepParse(pck string) {
 }
 
 func showConnections() {
-	fmt.Printf("========== CONNECTIONS ===========")
-	cLen := len(connections)
-	if cLen > 0 {
-		for _, v := range connections {
-			fmt.Println(v.IMEI)
+	for {
+		fmt.Printf("========== CONNECTIONS ===========\n")
+		cLen := len(connections)
+		if cLen > 0 {
+			for _, v := range connections {
+				fmt.Println(v.IMEI)
+			}
 		}
+		fmt.Printf("==================================\n")
+		time.Sleep(time.Second * 60)
 	}
-	fmt.Printf("==================================")
 }
 
 func main() {
