@@ -141,6 +141,7 @@ func main() {
 
 	connStr := fmt.Sprintf("mongodb://%s:%s@%s:%s", mongUsr, mongPass, mongHost, mongPort)
 	mgClient, err := mg.Connect(ctx, connStr)
+	mg.Seed(mgClient, ctx)
 	scooterColl = mgClient.Database("iot").Collection("okai_scooters")
 
 	connections = make(map[string]*Connection)
