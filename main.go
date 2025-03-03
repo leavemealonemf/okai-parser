@@ -12,6 +12,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -132,6 +133,13 @@ func showConnections() {
 
 var scooterColl *mongo.Collection
 var ctx = context.TODO()
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 
 func main() {
 	mongUsr, _ := os.LookupEnv("MONGO_USR")
