@@ -1,13 +1,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
 	okaiparsetools "okai/common/okai-parse-tools"
 	okaiparser "okai/common/okai-parser"
 	"okai/common/utils"
+	mg "okai/db/mg"
+	"os"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const (
@@ -83,8 +88,15 @@ func handleServe(conn net.Conn) {
 			fmt.Println("send heartbeat ack:", cmd)
 		}
 
-		jsn, _ := utils.JsonStringify(parsed)
-		fmt.Println(jsn)
+		_, err = utils.JsonStringify(parsed)
+
+		if err == nil {
+			_, err = scooterColl.InsertOne(ctx, parsed)
+			if err == nil {
+				fmt.Println("insert successfully")
+			}
+			fmt.Println(err.Error())
+		}
 	}
 }
 
@@ -118,7 +130,19 @@ func showConnections() {
 	}
 }
 
+var scooterColl *mongo.Collection
+var ctx = context.TODO()
+
 func main() {
+	mongUsr, _ := os.LookupEnv("MONGO_USR")
+	mongPass, _ := os.LookupEnv("MONGO_PASSWORD")
+	mongHost, _ := os.LookupEnv("MONGO_HOST")
+	mongPort, _ := os.LookupEnv("MONGO_PORT")
+
+	connStr := fmt.Sprintf("mongodb://%s:%s@%s:%s", mongUsr, mongPass, mongHost, mongPort)
+	mgClient, err := mg.Connect(ctx, connStr)
+	scooterColl = mgClient.Database("iot").Collection("okai_scooters")
+
 	connections = make(map[string]*Connection)
 	addr := fmt.Sprintf(":%d", TCP_PORT)
 
