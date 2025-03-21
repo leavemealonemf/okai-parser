@@ -95,8 +95,9 @@ func handleServe(conn net.Conn) {
 			_, err = scooterColl.InsertOne(ctx, parsed)
 			if err == nil {
 				fmt.Println("insert successfully")
+			} else {
+				fmt.Println(err.Error())
 			}
-			fmt.Println(err.Error())
 		}
 	}
 }
