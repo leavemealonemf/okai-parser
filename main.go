@@ -89,10 +89,7 @@ func handleServe(conn net.Conn) {
 			fmt.Println("send heartbeat ack:", cmd)
 		}
 
-		// pStr, err := utils.JsonStringify(parsed)
-		fmt.Println("parsed value:", len(parsed))
-
-		if err == nil {
+		if len(parsed) > 0 {
 			_, err = scooterColl.InsertOne(ctx, parsed)
 			if err == nil {
 				fmt.Println("insert successfully")
