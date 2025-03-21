@@ -11,12 +11,14 @@ import (
 	okaiparser "okai/common/okai-parser"
 	"okai/common/utils"
 	mg "okai/db/mg"
+	"okai/rabbit"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/cors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -33,6 +35,9 @@ type Connection struct {
 	Conn       net.Conn
 	TotalCount string
 }
+
+var rbtConn *amqp.Connection
+var rbtCh *amqp.Channel
 
 var connections map[string]*Connection
 
@@ -288,6 +293,25 @@ func main() {
 
 	go showConnections()
 	go initHttp()
+
+	rbtConn = rabbit.Conn()
+	ch, err := rbtConn.Channel()
+	rbtCh = ch
+
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	defer ch.Close()
+
+	_, err = ch.QueueDeclare(
+		"packets",
+		false,
+		false,
+		false,
+		false,
+		nil,
+	)
 	// oneStepParse("+RESP:GTFRI,OK043A,868070043228349,zk200,,,,,0,0000000000000000000,,,,,,,,,0250,0099,04E9,08C41A65,26&99,2,41,0,52322,4022,87,0,,0,,0.0&0.00&42.50&263.13&1&1&0&0000000D0000000D011A0000&000000D10500000000060000&00000000&0&02641C1B1A1AFFFFFF7D&1&1&00000000000000,85,20250228065940,00A6$0250228065921,009D$")
 	// oneStepParse("+RESP:GTNCN,OK043A,868070043228349,zk200,,,,,1,0000000000000000000,4,1.0,,218.2,,,20250301154818,,0250,0099,04E9,08C41A65,29&99,2,41,0,51521,4034,87,0,0,1,,0.0&0.00&0.00&263.22&0&0&0&0000000D0000000D011A0000&000000D10500000000060000&00000000&0&00000000000000000000&1&1&00000000000000,78,20250301154821,000B$")
 	for {

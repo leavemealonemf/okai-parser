@@ -1,6 +1,17 @@
 {
-    "turnOn": "F",
-    "turnOff": "10",
+    "unlock": "F",
+    "lock": "10",
     "turnOffHeadL": "A",
-    "turnOnHeadL": "9"
+    "turnOnHeadL": "9",
+    "rebootDevice": "3",
+    "clearCache": "50",
+    "unlockBatteryLock": "13",
+    "lockBatteryLock": "14",
+    "openStraightRodLock": "1E",
+    "closeStraightRodLock": "1F",
+    "openHelmetBoxLock": "1E",
+    "closeHelmetBoxLock": "1F",
+    "playAlarm": "B",
+    "playCustomPrompts": "22",
+    "locateVehicle": "C"
 }
