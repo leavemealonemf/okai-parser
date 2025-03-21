@@ -1,4 +1,5 @@
 {
     "turnOn": "F",
-    "turnOff": "10"
+    "turnOff": "10",
+    "turnOffHeadL": "A"
 }
