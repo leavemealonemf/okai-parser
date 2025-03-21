@@ -65,7 +65,7 @@ func handleServe(conn net.Conn) {
 
 		pType, pId, parsed, _ := okaiparser.ParseParams(params)
 
-		fmt.Printf("pId: %v\nPacket: %v\n", pId, parsed)
+		// fmt.Printf("pId: %v\nPacket: %v\n", pId, parsed)
 
 		if !authorized && pId == "GTNCN" {
 			imei := parsed["imei"].(string)
@@ -89,7 +89,9 @@ func handleServe(conn net.Conn) {
 			fmt.Println("send heartbeat ack:", cmd)
 		}
 
-		_, err = utils.JsonStringify(parsed)
+		str, err := utils.JsonStringify(parsed)
+
+		fmt.Println("json string val:", str)
 
 		if err == nil {
 			_, err = scooterColl.InsertOne(ctx, parsed)
