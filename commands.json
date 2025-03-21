@@ -3,6 +3,8 @@
     "lock": "10",
     "turnOffHeadL": "A",
     "turnOnHeadL": "9",
+    "turnOffTailL": "12",
+    "turnOnTailL": "11",
     "rebootDevice": "3",
     "clearCache": "50",
     "unlockBatteryLock": "13",
