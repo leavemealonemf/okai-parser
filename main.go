@@ -224,6 +224,8 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 		subcommand := commands[reqCommand]
 		cmd := okaiparser.CommandBuilder(subcommand, conn.TotalCount)
 		conn.Conn.Write([]byte(cmd))
+		w.Write([]byte("ok"))
+		return
 	}
 }
 
