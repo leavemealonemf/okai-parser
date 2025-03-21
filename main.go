@@ -216,9 +216,9 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 		imeiParts := strings.Split(reqImei, ":")
 
 		conn := connections[imeiParts[1]]
-
 		if conn == nil {
 			http.Error(w, fmt.Sprintf("connection with imei %s not found", imeiParts[1]), 404)
+			return
 		}
 
 		subcommand := commands[reqCommand]
