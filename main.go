@@ -25,8 +25,9 @@ const (
 )
 
 type Connection struct {
-	IMEI string
-	Conn *net.Conn
+	IMEI       string
+	Conn       *net.Conn
+	TotalCount string
 }
 
 var connections map[string]*Connection
@@ -93,6 +94,8 @@ func handleServe(conn net.Conn) {
 		}
 
 		if len(parsed) > 0 {
+			tc := parsed["totalCount"].(string)
+			connection.TotalCount = tc[0:3]
 			err = insertOneScooter(ctx, parsed)
 			if err == nil {
 				fmt.Println("insert successfully")
@@ -190,6 +193,11 @@ func showConnections() {
 
 var scooterColl *mongo.Collection
 var ctx = context.TODO()
+
+func initCommands() {
+	commands, _ := utils.LoadJSON[any]("commands.json")
+	fmt.Println(commands)
+}
 
 func init() {
 	err := godotenv.Load()

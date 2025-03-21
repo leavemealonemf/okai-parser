@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strconv"
 )
 
@@ -39,4 +40,13 @@ func JsonStringify(data interface{}) (string, error) {
 	}
 
 	return string(b), nil
+}
+
+func LoadJSON[T any](filename string) (T, error) {
+	var data T
+	fileData, err := os.ReadFile(filename)
+	if err != nil {
+		return data, err
+	}
+	return data, json.Unmarshal(fileData, &data)
 }
