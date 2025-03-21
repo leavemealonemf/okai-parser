@@ -99,7 +99,7 @@ func handleServe(conn net.Conn) {
 
 		if len(parsed) > 0 {
 			tc := parsed["totalCount"].(string)
-			connection.TotalCount = tc[0:3]
+			connection.TotalCount = tc[0:4]
 			err = insertOneScooter(ctx, parsed)
 			if err == nil {
 				fmt.Println("insert successfully")
