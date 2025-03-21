@@ -70,6 +70,7 @@ func parseBasePacket(params []string) map[string]interface{} {
 		"totalCount":              params[36],
 		"online":                  true,
 		"_ts":                     time.Now().Unix(),
+		"charge":                  params[34],
 	}
 
 	// rawGNSSInfo := params[17]
