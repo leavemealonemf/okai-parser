@@ -60,24 +60,22 @@ func handleServe(conn net.Conn) {
 			break
 		}
 
-		// fmt.Println("new message:", msg)
-		// fmt.Println("--------------------------")
-
 		pck := okaiparsetools.CutPacket(msg, "$")
 		params := okaiparsetools.SplitParams(pck, ",")
 
 		pType, pId, parsed, _ := okaiparser.ParseParams(params)
-		if parsed != nil {
-			if !authorized && pId == "GTNCN" {
-				imei := parsed["imei"].(string)
-				connection.IMEI = imei
-				connections[imei] = connection
-				authorized = true
-				fmt.Println("succesfully authorized")
-			} else {
-				fmt.Println("break connection...")
-				break
-			}
+
+		if !authorized && pId == "GTNCN" {
+			imei := parsed["imei"].(string)
+			connection.IMEI = imei
+			connections[imei] = connection
+			authorized = true
+			fmt.Println("succesfully authorized")
+			continue
+		}
+
+		if !authorized {
+			continue
 		}
 
 		// heartbeat handshake
