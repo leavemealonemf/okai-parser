@@ -194,8 +194,10 @@ func showConnections() {
 var scooterColl *mongo.Collection
 var ctx = context.TODO()
 
+var commands map[string]string
+
 func initCommands() {
-	commands, _ := utils.LoadJSON[any]("commands.json")
+	commands, _ = utils.LoadJSON[map[string]string]("commands.json")
 	fmt.Println(commands)
 }
 
@@ -205,6 +207,7 @@ func init() {
 		log.Fatal("Error loading .env file")
 	}
 	initCommands()
+	fmt.Println(commands["turnOn"])
 }
 
 func main() {
