@@ -65,6 +65,8 @@ func handleServe(conn net.Conn) {
 
 		pType, pId, parsed, _ := okaiparser.ParseParams(params)
 
+		fmt.Printf("pId: %v\nPacket: %v\n", pId, parsed)
+
 		if !authorized && pId == "GTNCN" {
 			imei := parsed["imei"].(string)
 			connection.IMEI = imei
