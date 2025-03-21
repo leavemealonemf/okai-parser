@@ -6,14 +6,18 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	okaiparsetools "okai/common/okai-parse-tools"
 	okaiparser "okai/common/okai-parser"
 	"okai/common/utils"
 	mg "okai/db/mg"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -26,7 +30,7 @@ const (
 
 type Connection struct {
 	IMEI       string
-	Conn       *net.Conn
+	Conn       net.Conn
 	TotalCount string
 }
 
@@ -34,7 +38,7 @@ var connections map[string]*Connection
 
 func handleServe(conn net.Conn) {
 	connection := &Connection{
-		Conn: &conn,
+		Conn: conn,
 		IMEI: "",
 	}
 
@@ -201,6 +205,28 @@ func initCommands() {
 	fmt.Println(commands)
 }
 
+func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		http.Error(w, "method not allowed yet", 404)
+	} else {
+		vars := mux.Vars(r)
+		reqImei := vars["imei"]
+		reqCommand := vars["cmd"]
+
+		imeiParts := strings.Split(reqImei, ":")
+
+		conn := connections[imeiParts[1]]
+
+		if conn == nil {
+			http.Error(w, fmt.Sprintf("connection with imei %s not found", imeiParts[1]), 404)
+		}
+
+		subcommand := commands[reqCommand]
+		cmd := okaiparser.CommandBuilder(subcommand, conn.TotalCount)
+		conn.Conn.Write([]byte(cmd))
+	}
+}
+
 func init() {
 	err := godotenv.Load()
 	if err != nil {
@@ -208,6 +234,31 @@ func init() {
 	}
 	initCommands()
 	fmt.Println(commands["turnOn"])
+}
+
+func initHttp() {
+	r := mux.NewRouter()
+
+	r.HandleFunc("/imei/{imei}/cmd/{cmd}", HTTPCommandHandler)
+
+	addr := fmt.Sprintf("0.0.0.0:%d", 8912)
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(r)
+
+	srv := &http.Server{
+		Handler:      handler,
+		Addr:         addr,
+		WriteTimeout: 60 * time.Second,
+		ReadTimeout:  60 * time.Second,
+	}
+
+	fmt.Printf("http server up on :%d\n", 8912)
+	log.Fatal(srv.ListenAndServe())
 }
 
 func main() {

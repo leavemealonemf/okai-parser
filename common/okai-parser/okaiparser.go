@@ -133,6 +133,6 @@ func parseBatteryStatusInfo(batteryRaw string) map[string]interface{} {
 	return btStatus
 }
 
-func commandBuilder(cmd string, tc string) string {
+func CommandBuilder(cmd string, tc string) string {
 	return fmt.Sprintf("AT+GTRTO=zk200,%s,,0,,,,,,%s$", cmd, tc)
 }
