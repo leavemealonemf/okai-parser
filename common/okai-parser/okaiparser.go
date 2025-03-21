@@ -5,6 +5,7 @@ import (
 	okaiparsetools "okai/common/okai-parse-tools"
 	"okai/common/utils"
 	"strings"
+	"time"
 )
 
 func ParseParams(params []string) (string, string, map[string]interface{}, error) {
@@ -67,6 +68,8 @@ func parseBasePacket(params []string) map[string]interface{} {
 		"eScootBatteryPercentage": params[34],
 		"genTime":                 params[35],
 		"totalCount":              params[36],
+		"online":                  true,
+		"_ts":                     time.Now().Unix(),
 	}
 
 	// rawGNSSInfo := params[17]
