@@ -90,7 +90,7 @@ func handleServe(conn net.Conn) {
 		}
 
 		// pStr, err := utils.JsonStringify(parsed)
-		fmt.Println("parsed value:", parsed)
+		fmt.Println("parsed value:", len(parsed))
 
 		if err == nil {
 			_, err = scooterColl.InsertOne(ctx, parsed)
