@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -13,7 +14,9 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -90,7 +93,7 @@ func handleServe(conn net.Conn) {
 		}
 
 		if len(parsed) > 0 {
-			_, err = scooterColl.InsertOne(ctx, parsed)
+			err = insertOneScooter(ctx, parsed)
 			if err == nil {
 				fmt.Println("insert successfully")
 			} else {
@@ -100,10 +103,65 @@ func handleServe(conn net.Conn) {
 	}
 }
 
+func insertOneScooter(ctx context.Context, dvce map[string]interface{}) error {
+	lat := dvce["lat"].(string)
+	lon := dvce["lon"].(string)
+	if len(lat) == 0 && len(lon) == 0 {
+		var latest bson.M
+		mg.FindOneWithOpts(
+			ctx, scooterColl,
+			bson.D{{Key: "imei", Value: dvce["imei"]}},
+			options.FindOne().SetSort(bson.D{{Key: "_ts", Value: -1}}),
+		).Decode(&latest)
+		if latest != nil {
+			dvce["lat"] = latest["lat"]
+			dvce["lon"] = latest["lon"]
+		}
+	}
+
+	_, e := scooterColl.InsertOne(ctx, dvce)
+
+	// marshal, _ := json.Marshal(dvce)
+	// publishPacket(marshal)
+
+	if e != nil {
+		return e
+	}
+
+	return nil
+}
 func abortTCP(conn *Connection) {
 	if connections[conn.IMEI] != nil {
 		delete(connections, conn.IMEI)
 	}
+
+	filter := bson.D{
+		{Key: "imei", Value: conn.IMEI},
+	}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{Key: "online", Value: false},
+		}},
+	}
+
+	opts := options.FindOneAndUpdate().SetSort(bson.D{{Key: "_ts", Value: -1}})
+	res := mg.UpdOneScooter(ctx, scooterColl, filter, update, opts)
+
+	var dvce bson.M
+	err := res.Decode(&dvce)
+	if err != nil {
+		fmt.Println("[abort tcp conn] failed to decode result mongo")
+		return
+	}
+	dvce["online"] = false
+	fmt.Println("online info after disconnect", dvce["online"])
+	_, err = json.Marshal(&dvce)
+	if err != nil {
+		fmt.Println("[abort tcp conn] failed to marshal result")
+		return
+	}
+	// do rabbit publish
 }
 
 func oneStepParse(pck string) {
