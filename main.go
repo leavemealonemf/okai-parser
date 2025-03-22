@@ -84,6 +84,8 @@ func handleServe(conn net.Conn) {
 			imei := parsed["imei"].(string)
 			connection.IMEI = imei
 			connections[imei] = connection
+			tc := parsed["totalCount"].(string)
+			connection.TotalCount = tc[0:4]
 			authorized = true
 			fmt.Println("succesfully authorized")
 			continue
