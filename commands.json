@@ -60,23 +60,23 @@
         "head": "GTRTO"
     },
     "setEcuSpeed5": {
-        "subcommand": 5,
+        "subcommand": "5",
         "head": "GTECC"
     },
     "setEcuSpeed10": {
-        "subcommand": 10,
+        "subcommand": "10",
         "head": "GTECC"
     },
     "setEcuSpeed15": {
-        "subcommand": 15,
+        "subcommand": "15",
         "head": "GTECC"
     },
     "setEcuSpeed20": {
-        "subcommand": 20,
+        "subcommand": "20",
         "head": "GTECC"
     },
     "setEcuSpeed25": {
-        "subcommand": 25,
+        "subcommand": "25",
         "head": "GTECC"
     }
 }
