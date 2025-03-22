@@ -205,10 +205,10 @@ func showConnections() {
 var scooterColl *mongo.Collection
 var ctx = context.TODO()
 
-var commands map[string]string
+var commands map[string]map[string]string
 
 func initCommands() {
-	commands, _ = utils.LoadJSON[map[string]string]("commands.json")
+	commands, _ = utils.LoadJSON[map[string]map[string]string]("commands.json")
 	fmt.Println(commands)
 }
 

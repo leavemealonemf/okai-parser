@@ -1,19 +1,82 @@
 {
-    "unlock": "F",
-    "lock": "10",
-    "turnOffHeadL": "A",
-    "turnOnHeadL": "9",
-    "turnOffTailL": "12",
-    "turnOnTailL": "11",
-    "rebootDevice": "3",
-    "clearCache": "50",
-    "unlockBatteryLock": "13",
-    "lockBatteryLock": "14",
-    "openStraightRodLock": "1E",
-    "closeStraightRodLock": "1F",
-    "openHelmetBoxLock": "1E",
-    "closeHelmetBoxLock": "1F",
-    "playAlarm": "B",
-    "playCustomPrompts": "22",
-    "locateVehicle": "C"
+    "unlock": {
+        "subcommand": "F",
+        "head": "GTRTO"
+    },
+    "lock": {
+        "subcommand": "10",
+        "head": "GTRTO"
+    },
+    "turnOffHeadL": {
+        "subcommand": "A",
+        "head": "GTRTO"
+    },
+    "turnOnHeadL": {
+        "subcommand": "9",
+        "head": "GTRTO"
+    },
+    "turnOffTailL": {
+        "subcommand": "12",
+        "head": "GTRTO"
+    },
+    "turnOnTailL": {
+        "subcommand": "11",
+        "head": "GTRTO"
+    },
+    "rebootDevice": {
+        "subcommand": "3",
+        "head": "GTRTO"
+    },
+    "clearCache": {
+        "subcommand": "50",
+        "head": "GTRTO"
+    },
+    "unlockBatteryLock": {
+        "subcommand": "13",
+        "head": "GTRTO"
+    },
+    "lockBatteryLock": {
+        "subcommand": "14",
+        "head": "GTRTO"
+    },
+    "openStraightRodLock": {
+        "subcommand": "1E",
+        "head": "GTRTO"
+    },
+    "closeStraightRodLock": {
+        "subcommand": "1F",
+        "head": "GTRTO"
+    },
+    "playAlarm": {
+        "subcommand": "B",
+        "head": "GTRTO"
+    },
+    "playCustomPrompts": {
+        "subcommand": "22",
+        "head": "GTRTO"
+    },
+    "locateVehicle": {
+        "subcommand": "C",
+        "head": "GTRTO"
+    },
+    "setEcuSpeed5": {
+        "subcommand": 5,
+        "head": "GTECC"
+    },
+    "setEcuSpeed10": {
+        "subcommand": 10,
+        "head": "GTECC"
+    },
+    "setEcuSpeed15": {
+        "subcommand": 15,
+        "head": "GTECC"
+    },
+    "setEcuSpeed20": {
+        "subcommand": 20,
+        "head": "GTECC"
+    },
+    "setEcuSpeed25": {
+        "subcommand": 25,
+        "head": "GTECC"
+    }
 }
