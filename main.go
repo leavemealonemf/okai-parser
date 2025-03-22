@@ -114,16 +114,14 @@ func handleServe(conn net.Conn) {
 			continue
 		}
 
-		if pType == "+ACK" && pId == "GTECC" {
-			cmdID := parsed["cmdID"].(string)
-			fmt.Println("GET ACKNOWLEGE CMD ID:", cmdID)
-			continue
-		}
-
-		if pType == "+ACK" && pId == "GTRTO" {
-			cmdID := parsed["cmdID"].(string)
-			fmt.Println("GET ACKNOWLEGE CMD ID:", cmdID)
-			continue
+		if pType == "+ACK" {
+			if pId == "GTECC" || pId == "GTRTO" {
+				cmdID := parsed["cmdID"].(string)
+				receivedCommand := receivedCommands[cmdID]
+				if receivedCommand != nil {
+					receivedCommand.ExecChannel <- true
+				}
+			}
 		}
 
 		// heartbeat handshake
