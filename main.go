@@ -260,17 +260,16 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println(cmdS)
-
 		resStr := strings.Split(cmdS.ImeiWithPrefix, ":")
-		fmt.Println(resStr)
 		cmd := cmdS.CMD
 		imei := resStr[1]
-		fmt.Println(imei)
+
 		c := connections[imei]
+		fmt.Println("conn", c)
 
 		if c != nil {
 			cmdInfo := commands[cmd]
+			fmt.Println("command info map", cmdInfo)
 
 			if cmdInfo == nil {
 				w.WriteHeader(404)
