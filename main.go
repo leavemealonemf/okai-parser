@@ -95,6 +95,18 @@ func handleServe(conn net.Conn) {
 			continue
 		}
 
+		if pType == "+ACK" && pId == "GTECC" {
+			cmdID := parsed["cmdID"].(string)
+			fmt.Println("GET ACKNOWLEGE CMD ID:", cmdID)
+			continue
+		}
+
+		if pType == "+ACK" && pId == "GTRTO" {
+			cmdID := parsed["cmdID"].(string)
+			fmt.Println("GET ACKNOWLEGE CMD ID:", cmdID)
+			continue
+		}
+
 		// heartbeat handshake
 		if pType == "+ACK" && pId == "GTHBD" {
 			protoVer := params[1]
