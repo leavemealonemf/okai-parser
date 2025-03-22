@@ -141,7 +141,7 @@ func CommandBuilder(cmd map[string]string, tc string) string {
 
 	switch cmd["head"] {
 	case "GTRTO":
-		return fmt.Sprintf("AT+GTRTO=zk200,%s,,cmd%d,,,,,,%s$", cmd["subcommand"], rand.Int(), tc)
+		return fmt.Sprintf("AT+GTRTO=zk200,%s,,%x,,,,,,%s$", cmd["subcommand"], rand.Int(), tc)
 	case "GTECC":
 		return fmt.Sprintf("AT+GTECC=zk200,,%s,,1,,,,,,%s$", cmd["subcommand"], tc)
 	default:
