@@ -307,26 +307,13 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 				delete(receivedCommands, token)
 			}
 
-		}
-
-	} else {
-		vars := mux.Vars(r)
-		reqImei := vars["imei"]
-		reqCommand := vars["cmd"]
-
-		imeiParts := strings.Split(reqImei, ":")
-
-		conn := connections[imeiParts[1]]
-		if conn == nil {
-			http.Error(w, fmt.Sprintf("connection with imei %s not found", imeiParts[1]), 404)
+		} else {
+			w.WriteHeader(404)
+			w.Write([]byte("device not connected"))
 			return
 		}
-
-		subcommand := commands[reqCommand]
-		cmd := okaiparser.CommandBuilder(subcommand, conn.TotalCount)
-		fmt.Println("builded command:", cmd)
-		conn.Conn.Write([]byte(cmd))
-		w.Write([]byte("ok"))
+	} else {
+		http.Error(w, "method not implemented", 404)
 		return
 	}
 }
