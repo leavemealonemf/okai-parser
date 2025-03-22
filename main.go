@@ -133,8 +133,8 @@ func insertOneScooter(ctx context.Context, dvce map[string]interface{}) error {
 
 	_, e := scooterColl.InsertOne(ctx, dvce)
 
-	// marshal, _ := json.Marshal(dvce)
-	// publishPacket(marshal)
+	marshal, _ := json.Marshal(dvce)
+	publishPacket(marshal)
 
 	if e != nil {
 		return e
@@ -142,6 +142,7 @@ func insertOneScooter(ctx context.Context, dvce map[string]interface{}) error {
 
 	return nil
 }
+
 func abortTCP(conn *Connection) {
 	if connections[conn.IMEI] != nil {
 		delete(connections, conn.IMEI)
@@ -168,12 +169,13 @@ func abortTCP(conn *Connection) {
 	}
 	dvce["online"] = false
 	fmt.Println("online info after disconnect", dvce["online"])
-	_, err = json.Marshal(&dvce)
+	j, err := json.Marshal(&dvce)
 	if err != nil {
 		fmt.Println("[abort tcp conn] failed to marshal result")
 		return
 	}
-	// do rabbit publish
+
+	publishPacket(j)
 }
 
 func oneStepParse(pck string) {
@@ -242,6 +244,22 @@ func init() {
 	}
 	initCommands()
 	fmt.Println(commands["turnOn"])
+}
+
+func publishPacket(pkt []byte) {
+	err := rbtCh.Publish(
+		"",
+		"packets",
+		false,
+		false,
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        pkt,
+		},
+	)
+	if err != nil {
+		log.Println("failed to publish message", err.Error())
+	}
 }
 
 func initHttp() {
