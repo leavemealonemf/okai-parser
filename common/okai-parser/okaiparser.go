@@ -22,10 +22,11 @@ func ParseParams(params []string) (string, string, map[string]interface{}, error
 	} else if pktType == "+RESP" && pktId == "GTNCN" {
 		packet := parseBasePacket(params)
 		return pktType, pktId, packet, nil
-	} else if pktType == "+RESP" && pktId == "GTALS" {
-		fmt.Println("GET |GTALS| +RESP:", params)
-		return pktType, pktId, nil, nil
 	}
+
+	fmt.Println("----------------------------")
+	fmt.Printf("TYPE: %s | ID: %s\nparams: %s\n", pktType, pktId, params)
+
 	return pktType, pktId, nil, nil
 }
 
