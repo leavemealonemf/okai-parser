@@ -114,6 +114,11 @@ func handleServe(conn net.Conn) {
 			continue
 		}
 
+		// test case catch alarm
+		if pType == "+RESP" && pId == "GTALM" {
+			fmt.Println("RAW ALARM EVENT PACKET", string(buff))
+		}
+
 		if pType == "+ACK" {
 			if pId == "GTECC" || pId == "GTRTO" {
 				cmdID := parsed["cmdID"].(string)
@@ -123,12 +128,6 @@ func handleServe(conn net.Conn) {
 					receivedCommand.ExecChannel <- true
 				}
 			}
-			continue
-		}
-
-		// test case catch alarm
-		if pType == "+RESP" && pId == "GTALM" {
-			fmt.Println("RAW ALARM EVENT PACKET", string(buff))
 			continue
 		}
 
