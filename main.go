@@ -265,11 +265,9 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 		imei := resStr[1]
 
 		c := connections[imei]
-		fmt.Println("conn", c)
 
 		if c != nil {
 			cmdInfo := commands[cmd]
-			fmt.Println("command info map", cmdInfo)
 
 			if cmdInfo == nil {
 				w.WriteHeader(404)
@@ -405,6 +403,8 @@ func main() {
 	}
 
 	log.Println("Server started:", serve.Addr().Network())
+
+	receivedCommands = map[string]*ReceivedCommand{}
 
 	go showConnections()
 	go initHttp()
