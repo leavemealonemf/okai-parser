@@ -92,6 +92,7 @@ func parseBasePacket(params []string) map[string]interface{} {
 	ecuInfo := parseEcu(rawEcuInfo)
 	packet["ecuInfo"] = ecuInfo
 	packet["gnssInfo"] = params[17]
+	fmt.Println("RAW GNSS_INFO", params[17])
 
 	return packet
 }

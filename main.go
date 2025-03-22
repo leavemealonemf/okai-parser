@@ -126,6 +126,11 @@ func handleServe(conn net.Conn) {
 			continue
 		}
 
+		// test case gnss info
+		if pType == "+RESP" && pId == "GTFRI" {
+			fmt.Println("RAW GTFRI PACKET:", string(buff))
+		}
+
 		// heartbeat handshake
 		if pType == "+ACK" && pId == "GTHBD" {
 			protoVer := params[1]
