@@ -78,5 +78,9 @@
     "setEcuSpeed25": {
         "subcommand": "25",
         "head": "GTECC"
+    },
+    "getLocation": {
+        "subcommand": "D",
+        "head": "GTRTO"
     }
 }
