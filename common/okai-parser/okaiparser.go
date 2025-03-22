@@ -2,6 +2,7 @@ package okaiparser
 
 import (
 	"fmt"
+	"math/rand"
 	okaiparsetools "okai/common/okai-parse-tools"
 	"okai/common/utils"
 	"strings"
@@ -21,6 +22,9 @@ func ParseParams(params []string) (string, string, map[string]interface{}, error
 	} else if pktType == "+RESP" && pktId == "GTNCN" {
 		packet := parseBasePacket(params)
 		return pktType, pktId, packet, nil
+	} else if pktType == "+RESP" && pktId == "GTALS" {
+		fmt.Println("GET |GTALS| +RESP:", params)
+		return pktType, pktId, nil, nil
 	}
 	return pktType, pktId, nil, nil
 }
@@ -134,9 +138,10 @@ func parseBatteryStatusInfo(batteryRaw string) map[string]interface{} {
 }
 
 func CommandBuilder(cmd map[string]string, tc string) string {
+
 	switch cmd["head"] {
 	case "GTRTO":
-		return fmt.Sprintf("AT+GTRTO=zk200,%s,,0,,,,,,%s$", cmd["subcommand"], tc)
+		return fmt.Sprintf("AT+GTRTO=zk200,%s,,cmd%d,,,,,,%s$", cmd["subcommand"], rand.Int(), tc)
 	case "GTECC":
 		return fmt.Sprintf("AT+GTECC=zk200,,%s,,1,,,,,,%s$", cmd["subcommand"], tc)
 	default:
