@@ -28,7 +28,7 @@ func ParseParams(params []string) (string, string, map[string]interface{}, error
 		return pktType, pktId, packet, nil
 	} else if pktType == "+ACK" && pktId == "GTECC" {
 		packet := map[string]interface{}{
-			"cmdID": params[6],
+			"cmdID": params[5],
 		}
 		return pktType, pktId, packet, nil
 	}
