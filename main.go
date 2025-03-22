@@ -359,7 +359,7 @@ func publishPacket(pkt []byte) {
 func initHttp() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/imei/{imei}/cmd/{cmd}", HTTPCommandHandler)
+	r.HandleFunc("/cmd", HTTPCommandHandler)
 
 	addr := fmt.Sprintf("0.0.0.0:%d", 8912)
 
