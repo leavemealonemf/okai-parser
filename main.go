@@ -122,6 +122,7 @@ func handleServe(conn net.Conn) {
 					receivedCommand.ExecChannel <- true
 				}
 			}
+			continue
 		}
 
 		// heartbeat handshake
