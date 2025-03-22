@@ -126,6 +126,12 @@ func handleServe(conn net.Conn) {
 			continue
 		}
 
+		// test case catch alarm
+		if pType == "+RESP" && pId == "GTALM" {
+			fmt.Println("RAW ALARM EVENT PACKET", string(buff))
+			continue
+		}
+
 		// test case get location
 		// RESP: GTINF
 		if pType == "+RESP" && pId == "GTINF" {
