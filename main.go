@@ -120,6 +120,7 @@ func handleServe(conn net.Conn) {
 			if pId == "GTECC" || pId == "GTRTO" {
 				fmt.Println("RES CASE")
 				cmdID := parsed["cmdID"].(string)
+				fmt.Println(cmdID)
 				receivedCommand := receivedCommands[cmdID]
 				if receivedCommand != nil {
 					receivedCommand.ExecChannel <- true
