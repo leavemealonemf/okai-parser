@@ -126,10 +126,17 @@ func handleServe(conn net.Conn) {
 			continue
 		}
 
-		// test case gnss info
-		if pType == "+RESP" && pId == "GTFRI" {
-			fmt.Println("RAW GTFRI PACKET:", string(buff))
+		// test case get location
+		// RESP: GTINF
+		if pType == "+RESP" && pId == "GTINF" {
+			fmt.Println("RAW LOCATION PACKET", string(buff))
+			continue
 		}
+
+		// test case gnss info
+		// if pType == "+RESP" && pId == "GTFRI" {
+		// 	fmt.Println("RAW GTFRI PACKET:", string(buff))
+		// }
 
 		// heartbeat handshake
 		if pType == "+ACK" && pId == "GTHBD" {
