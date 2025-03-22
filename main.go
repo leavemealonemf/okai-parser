@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -36,10 +37,28 @@ type Connection struct {
 	TotalCount string
 }
 
+type QueueCmd struct {
+	CMD            string `json:"Cmd"`
+	ImeiWithPrefix string `json:"IMEI"`
+}
+
+type ReceivedCommand struct {
+	ServerTime    int64         `json:"_ts" bson:"_ts"`
+	CompletedTime int64         `json:"_ct" bson:"_ct"`
+	CMD           string        `json:"hex_origin" bson:"hex_origin,omitempty"`
+	Token         string        `json:"token" bson:"token,omitempty"`
+	Status        string        `json:"status" bson:"status,omitempty"`
+	IMEI          string        `json:"dvce_imei" bson:"dvce_imei,omitempty"`
+	CMDInfo       interface{}   `json:"cmd_info" bson:"cmd_info"`
+	QueueD        amqp.Delivery `json:"-" bson:"-"`
+	ExecChannel   chan bool     `json:"-" bson:"-"`
+}
+
 var rbtConn *amqp.Connection
 var rbtCh *amqp.Channel
 
 var connections map[string]*Connection
+var receivedCommands map[string]*ReceivedCommand
 
 func handleServe(conn net.Conn) {
 	connection := &Connection{
@@ -228,7 +247,68 @@ func initCommands() {
 
 func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		http.Error(w, "method not allowed yet", 404)
+		body, err := io.ReadAll(r.Body)
+
+		if err != nil {
+			http.Error(w, "failed to read bytes", 400)
+		}
+
+		var cmdS QueueCmd
+		err = json.Unmarshal(body, &cmdS)
+		if err != nil {
+			http.Error(w, "Failed to parse JSON response", http.StatusInternalServerError)
+			return
+		}
+
+		resStr := strings.Split(cmdS.ImeiWithPrefix, ":")
+		cmd := cmdS.CMD
+		imei := resStr[1]
+		c := connections[imei]
+
+		if c != nil {
+			cmdInfo := commands[cmd]
+
+			if cmdInfo == nil {
+				w.WriteHeader(404)
+				w.Write([]byte("this command does not exist"))
+				return
+			}
+
+			token := c.TotalCount
+
+			bCommand := okaiparser.CommandBuilder(cmdInfo, token)
+			cmdChan := make(chan bool)
+
+			recievedCmd := &ReceivedCommand{
+				ServerTime:  time.Now().UnixMicro(),
+				CMD:         bCommand,
+				Token:       token,
+				Status:      "pending",
+				IMEI:        imei,
+				CMDInfo:     commands[cmd],
+				ExecChannel: cmdChan,
+			}
+
+			receivedCommands[token] = recievedCmd
+			// mg.Insert(ctx, cmdsColl, recievedCmd)
+			c.Conn.Write([]byte(bCommand))
+
+			select {
+			case success := <-cmdChan:
+				if success {
+					w.Write([]byte(fmt.Sprintf("Command %s executed successfully", cmd)))
+					delete(receivedCommands, token)
+				} else {
+					http.Error(w, "Command execution failed", http.StatusInternalServerError)
+					delete(receivedCommands, token)
+				}
+			case <-time.After(60 * time.Second):
+				http.Error(w, "Command execution timed out", http.StatusRequestTimeout)
+				delete(receivedCommands, token)
+			}
+
+		}
+
 	} else {
 		vars := mux.Vars(r)
 		reqImei := vars["imei"]
