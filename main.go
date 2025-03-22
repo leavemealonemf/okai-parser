@@ -260,9 +260,13 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		fmt.Println(cmdS)
+
 		resStr := strings.Split(cmdS.ImeiWithPrefix, ":")
+		fmt.Println(resStr)
 		cmd := cmdS.CMD
 		imei := resStr[1]
+		fmt.Println(imei)
 		c := connections[imei]
 
 		if c != nil {
