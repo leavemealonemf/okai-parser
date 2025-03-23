@@ -437,12 +437,12 @@ func main() {
 	scooterColl = mgClient.Database("iot").Collection("okai_scooters")
 	configsColl = mgClient.Database("iot").Collection("okai_configs")
 
-	c, err := configsColl.Find(ctx, bson.A{}, nil)
+	c, err := configsColl.Find(ctx, bson.M{}, nil)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 	var ifce bson.M
-	err = c.All(ctx, &ifce)
+	err = c.All(ctx, ifce)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
