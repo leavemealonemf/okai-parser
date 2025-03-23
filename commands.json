@@ -94,5 +94,9 @@
     "configureNetwork": {
         "subcommand": "1",
         "head": "GTQSS"
+    },
+    "getConfig": {
+        "subcommand": "2",
+        "head": "GTRTO"
     }
 }

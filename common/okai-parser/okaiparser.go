@@ -31,6 +31,9 @@ func ParseParams(params []string) (string, string, map[string]interface{}, error
 			"cmdID": params[5],
 		}
 		return pktType, pktId, packet, nil
+	} else if pktType == "+RESP" && pktId == "GTALC" {
+		packet := parseMainCfg(params)
+		return pktType, pktId, packet, nil
 	}
 
 	// fmt.Println("----------------------------")
@@ -42,6 +45,184 @@ func ParseParams(params []string) (string, string, map[string]interface{}, error
 func HeadInfo(head string) (string, string) {
 	parts := strings.Split(head, ":")
 	return parts[0], parts[1]
+}
+
+func parseMainCfg(params []string) map[string]interface{} {
+	packet := map[string]interface{}{
+		"head": map[string]interface{}{
+			"protocol_version":   params[1],
+			"imei":               params[2],
+			"device_name":        params[3],
+			"vim":                params[4],
+			"qr_code":            params[5],
+			"rs1":                params[6],
+			"task_id":            params[7],
+			"configuration_code": params[8],
+		},
+		"qss": map[string]interface{}{
+			"apn":                    params[10],
+			"apn_username":           params[11],
+			"apn_password":           params[12],
+			"reporting_mode":         params[13],
+			"network_mode":           params[14],
+			"enable_buffer":          params[15],
+			"primary_server_address": params[16],
+			"primary_server_port":    params[17],
+			"lte_mode":               params[18],
+			"region":                 params[19],
+			"rs2":                    params[20],
+			"heartbeat_interval":     params[21],
+			"rs3":                    params[22],
+			"enable_bth_unlocking":   params[23],
+			"ble_broadcase_name":     params[24],
+		},
+		"cfg": map[string]interface{}{
+			"new_password":                   params[26],
+			"device_name":                    params[27],
+			"gps_always_on":                  params[28],
+			"filter_gps_data_time":           params[29],
+			"agps_mode":                      params[30],
+			"brake_cfg":                      params[31],
+			"reporting_item_mask":            params[32],
+			"event_mask":                     params[33],
+			"instrument_type_cfg":            params[34],
+			"atmosphere_light_vibration_cfg": params[35],
+			"auto_lock_when_meter_conn_lost": params[36],
+			"poweron_upgrade":                params[37],
+			"enable_voice_playback":          params[38],
+			"volume_adjustment":              params[39],
+			"turn_sig_audio_play":            params[40],
+		},
+		"tma": map[string]interface{}{
+			"marker":               params[42],
+			"hourly_offset":        params[43],
+			"minute_based_offset":  params[44],
+			"daylight_saving_time": params[45],
+		},
+		"fri": map[string]interface{}{
+			"mode": params[52],
+			"not_report_location_when_pos_unavailable": params[53],
+			"lock_sending_interval":                    params[54],
+			"unlock_sending_interval":                  params[55],
+			"stanby_pwr_send_interval":                 params[56],
+			"use_gps_raw_data":                         params[57],
+		},
+		"dog": map[string]interface{}{
+			"mode":                   params[62],
+			"interval":               params[64],
+			"date":                   params[65],
+			"report_before_restart":  params[67],
+			"unit":                   params[68],
+			"no_network_interval":    params[69],
+			"no_activation_interval": params[70],
+			"send_timeout":           params[71],
+		},
+		"nmd": map[string]interface{}{
+			"stale_time":               params[78],
+			"motion_duration":          params[79],
+			"sens_lvl":                 params[80],
+			"sens_of_trigg_motor_lock": params[82],
+		},
+		"alm": map[string]interface{}{
+			"vibration_alarm_duration": params[87],
+			"alarm_interval":           params[88],
+			"six_axis_sensor_dir":      params[90],
+		},
+		"ecc": map[string]interface{}{
+			"motor_pwr_cfg":              params[93],
+			"max_speed_limit":            params[94],
+			"acceleration_mode":          params[95],
+			"display_unit":               params[96],
+			"acceleration_lvl":           params[97],
+			"braking_force":              params[98],
+			"working_mode_of_tail_light": params[99],
+			"lock_force_lvl":             params[100],
+			"kinetic_energy_rec_lvl":     params[101],
+		},
+		"led": map[string]interface{}{
+			"center_console_led_settimg":   params[103],
+			"headlight_auto_on_off_cfg":    params[104],
+			"set_the_turn_sig":             params[105],
+			"rgb_setting":                  params[106],
+			"status_light_mode":            params[107],
+			"status_setting":               params[108],
+			"status_indicator_prompt_mode": params[109],
+			"animation_lvl":                params[110],
+			"mode_cfg":                     params[111],
+		},
+		"ipn": nil,
+		"vad": map[string]interface{}{
+			"enable_battery_lock":        params[123],
+			"enable_electronic_bell":     params[124],
+			"instrument_style_ifce_cfg":  params[125],
+			"nfc_work_mode":              params[126],
+			"handle_cfg":                 params[127],
+			"battery_lock_type":          params[128],
+			"battery_lock_alarm_pb_time": params[129],
+		},
+		"nfc": nil,
+		"bcp": map[string]interface{}{
+			"pass_type_selection":  params[139],
+			"static_pass_str":      params[140],
+			"mac_addr_setting":     params[141],
+			"mac_addr":             params[142],
+			"instument_nfc_switch": params[143],
+		},
+		"mel": map[string]interface{}{
+			"straight_rod_lock_selection":     params[145],
+			"helmet_box_lock_selection":       params[146],
+			"ulock_selection":                 params[147],
+			"num_of_straight_rod_lock_alarms": params[148],
+			"num_of_helmet_box_lock_alarms":   params[149],
+			"multi_mech_lock_enable_mask":     params[150],
+		},
+		"dcc": map[string]interface{}{
+			"motion_data_coll":          params[153],
+			"motion_data_coll_duration": params[154],
+			"g_sensor_risk_duration":    params[155],
+			"g_sensor_risk_sens":        params[155],
+		},
+		"hlm": map[string]interface{}{
+			"top_light_work_mode":  params[162],
+			"side_light_work_mode": params[163],
+			"top_light_color_r":    params[164],
+			"top_light_color_g":    params[165],
+			"top_light_color_b":    params[166],
+			"side_light_color_r":   params[167],
+			"side_light_color_g":   params[168],
+			"side_light_color_b":   params[169],
+			"offline_rgb_settings": params[170],
+		},
+		"nal": map[string]interface{}{
+			"mode":                      params[175],
+			"server_conn_loss_duration": params[176],
+		},
+		"rmb": map[string]interface{}{
+			"mode":                  params[182],
+			"blacklist_operator_1":  params[184],
+			"blacklist_operator_20": params[186],
+		},
+		"bts": map[string]interface{}{
+			"discoverable_mode": params[197],
+		},
+		"cic": map[string]interface{}{
+			"ecu_throttle":                   params[215],
+			"enable_wireless_charging":       params[216],
+			"push_mode":                      params[217],
+			"parking_gear":                   params[218],
+			"dashboard_charge_auto_off_time": params[219],
+			"motor_lock":                     params[220],
+			"overspeed_alarm":                params[221],
+		},
+		"xwm": map[string]interface{}{
+			"working_mode":                 params[224],
+			"reporting_dir_in_normal_mode": params[225],
+			"reporting_dir_in_test_mode":   params[226],
+			"customer_code":                params[229],
+			"gen_time":                     params[230],
+		},
+	}
+	return packet
 }
 
 func parseBasePacket(params []string) map[string]interface{} {

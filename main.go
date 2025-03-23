@@ -72,6 +72,10 @@ func sendLogTg(msg string) {
 	}
 }
 
+func saveScooterConfig() {
+
+}
+
 func handleServe(conn net.Conn) {
 	connection := &Connection{
 		Conn: conn,
@@ -120,6 +124,8 @@ func handleServe(conn net.Conn) {
 			connection.TotalCount = tc[0:4]
 			authorized = true
 			fmt.Println("succesfully authorized")
+			cfgCmd := okaiparser.CommandBuilder(commands["getConfig"], tc)
+			connection.Conn.Write([]byte(cfgCmd))
 			sendLogTg(fmt.Sprintf("device %s connected", connection.IMEI))
 			continue
 		}
@@ -128,10 +134,25 @@ func handleServe(conn net.Conn) {
 			continue
 		}
 
-		// test case catch alarm
-		if pType == "+RESP" && pId == "GTALM" {
-			fmt.Println("RAW ALARM EVENT PACKET", string(buff))
+		// get and save config
+		if pType == "+RESP" && pId == "GTALC" {
+			if parsed != nil {
+				parsed["_ts"] = time.Now().Unix()
+				_, err := configsColl.InsertOne(ctx, parsed)
+				if err != nil {
+					fmt.Println("Save config failure")
+				}
+			} else {
+				fmt.Println("GTALC is empty")
+			}
+
+			continue
 		}
+
+		// test case catch alarm
+		// if pType == "+RESP" && pId == "GTALM" {
+		// 	fmt.Println("RAW ALARM EVENT PACKET", string(buff))
+		// }
 
 		if pType == "+ACK" {
 			if pId == "GTECC" || pId == "GTRTO" || pId == "GTVAD" {
@@ -147,10 +168,10 @@ func handleServe(conn net.Conn) {
 
 		// test case get location
 		// RESP: GTINF
-		if pType == "+RESP" && pId == "GTINF" {
-			fmt.Println("RAW LOCATION PACKET", string(buff))
-			continue
-		}
+		// if pType == "+RESP" && pId == "GTINF" {
+		// 	fmt.Println("RAW LOCATION PACKET", string(buff))
+		// 	continue
+		// }
 
 		// test case gnss info
 		// if pType == "+RESP" && pId == "GTFRI" {
@@ -245,9 +266,9 @@ func abortTCP(conn *Connection) {
 func oneStepParse(pck string) {
 	params := okaiparsetools.SplitParams(pck, ",")
 	_, _, parsed, _ := okaiparser.ParseParams(params)
-	if parsed != nil {
-		fmt.Println(parsed["imei"])
-	}
+	// if parsed != nil {
+	// 	fmt.Println(parsed["imei"])
+	// }
 	jsn, _ := utils.JsonStringify(parsed)
 	fmt.Println(jsn)
 }
@@ -267,13 +288,13 @@ func showConnections() {
 }
 
 var scooterColl *mongo.Collection
+var configsColl *mongo.Collection
 var ctx = context.TODO()
 
 var commands map[string]map[string]string
 
 func initCommands() {
 	commands, _ = utils.LoadJSON[map[string]map[string]string]("commands.json")
-	fmt.Println(commands)
 }
 
 func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
@@ -356,7 +377,6 @@ func init() {
 		log.Fatal("Error loading .env file")
 	}
 	initCommands()
-	fmt.Println(commands["turnOn"])
 }
 
 func publishPacket(pkt []byte) {
@@ -401,6 +421,9 @@ func initHttp() {
 }
 
 func main() {
+	// oneStepParse("+RESP:GTALC,OK043A,868070043228349,zk200,,,,,FFFFFFFFFFFFFFFF,QSS,,,,3,0,1,iot-socket.okai.co,14010,0,0,,005,,1,zk200,CFG,zk200,zk200,0,05,0,2,00FF,00FF,0,0,0,0,1,6,1,TMA,+,00,00,0,,,,,,FRI,1,0,00240,00010,0240,,,,,DOG,1,,07,0200,,1,0,0060,0060,0060,,,,,,NMD,002,03,05,,0400,,,,ALM,010,0010,,5,,ECC,7,25,1,1,2,00,1,0,,LED,1,0,0,00FF00,4,0,0,30,00000000,IPN,,,,,,,,,,VAD,0,0,0,0,1,4,00,NFC,,,,,,,BCP,,1,zk200,0,,0,MEL,1,2,1,00,00,0000000000000001,,DCC,0,10,0,07,0,,,,HLM,0,0,255,255,255,255,255,255,0000000000000000,,,,NAL,0,060,,,,,RMD,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BTS,,,,,0,,,,,,,,,,,,,,,,,CIC,1,0,0,,,1,0,,XWM,1,03,03,,,35,20250323074858,0012$")
+	// return
+
 	mongUsr, _ := os.LookupEnv("MONGO_USR")
 	mongPass, _ := os.LookupEnv("MONGO_PASSWORD")
 	mongHost, _ := os.LookupEnv("MONGO_HOST")
@@ -410,6 +433,7 @@ func main() {
 	mgClient, err := mg.Connect(ctx, connStr)
 	mg.Seed(mgClient, ctx)
 	scooterColl = mgClient.Database("iot").Collection("okai_scooters")
+	configsColl = mgClient.Database("iot").Collection("okai_configs")
 
 	connections = make(map[string]*Connection)
 	addr := fmt.Sprintf(":%d", TCP_PORT)
