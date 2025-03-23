@@ -90,5 +90,9 @@
     "cfgEnableBatteryLock": {
         "subcommand": "1",
         "head": "GTVAD"
+    },
+    "configureNetwork": {
+        "subcommand": "1",
+        "head": "GTQSS"
     }
 }
