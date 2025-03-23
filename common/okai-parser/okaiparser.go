@@ -49,6 +49,8 @@ func HeadInfo(head string) (string, string) {
 
 func parseMainCfg(params []string) map[string]interface{} {
 	packet := map[string]interface{}{
+		"_ts":  time.Now().Unix(),
+		"imei": params[2],
 		"head": map[string]interface{}{
 			"protocol_version":   params[1],
 			"imei":               params[2],

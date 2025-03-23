@@ -137,7 +137,6 @@ func handleServe(conn net.Conn) {
 		// get and save config
 		if pType == "+RESP" && pId == "GTALC" {
 			if parsed != nil {
-				parsed["_ts"] = time.Now().Unix()
 				_, err := configsColl.InsertOne(ctx, parsed)
 				if err != nil {
 					fmt.Println("Save config failure")
