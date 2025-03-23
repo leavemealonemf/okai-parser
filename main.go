@@ -442,13 +442,13 @@ func main() {
 		log.Fatalln(err.Error())
 	}
 	var ifce []bson.M
-	err = c.All(ctx, &ifce)
+	err = c.All(ctx, ifce)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 
 	fmt.Println(ifce)
-	return
+
 	connections = make(map[string]*Connection)
 	addr := fmt.Sprintf(":%d", TCP_PORT)
 
