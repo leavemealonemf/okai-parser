@@ -114,10 +114,14 @@ func handleServe(conn net.Conn) {
 
 		pType, pId, parsed, _ := okaiparser.ParseParams(params)
 
-		fmt.Printf("pId: %v\nPacket: %v\n", pId, parsed)
+		// fmt.Printf("pId: %v\nPacket: %v\n", pId, parsed)
 
 		if !authorized && pId == "GTNCN" {
 			imei := parsed["imei"].(string)
+			if existingConn, exists := connections[imei]; exists {
+				fmt.Println("Device already connected:", imei)
+				existingConn.Conn.Close() // Close old connection
+			}
 			connection.IMEI = imei
 			connections[imei] = connection
 			tc := parsed["totalCount"].(string)
@@ -131,7 +135,7 @@ func handleServe(conn net.Conn) {
 		}
 
 		if !authorized {
-			continue
+			break
 		}
 
 		// get and save config
