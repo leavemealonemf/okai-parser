@@ -197,7 +197,7 @@ func parseMainCfg(params []string) map[string]interface{} {
 			"mode":                      params[175],
 			"server_conn_loss_duration": params[176],
 		},
-		"rmb": map[string]interface{}{
+		"rmd": map[string]interface{}{
 			"mode":                  params[182],
 			"blacklist_operator_1":  params[184],
 			"blacklist_operator_20": params[186],

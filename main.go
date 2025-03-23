@@ -441,8 +441,8 @@ func main() {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	var ifce bson.M
-	err = c.All(ctx, ifce)
+	var ifce []bson.M
+	err = c.All(ctx, &ifce)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
