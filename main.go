@@ -120,7 +120,7 @@ func handleServe(conn net.Conn) {
 		}
 
 		if pType == "+ACK" {
-			if pId == "GTECC" || pId == "GTRTO" {
+			if pId == "GTECC" || pId == "GTRTO" || pId == "GTVAD" {
 				cmdID := parsed["cmdID"].(string)
 				fmt.Println(cmdID)
 				receivedCommand := receivedCommands[cmdID]

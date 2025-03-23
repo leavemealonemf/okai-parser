@@ -158,7 +158,7 @@ func CommandBuilder(cmd map[string]string, tc string) string {
 	case "GTECC":
 		return fmt.Sprintf("AT+GTECC=zk200,,%s,,1,,,,,,%s$", cmd["subcommand"], tc)
 	case "GTVAD":
-		return fmt.Sprintf("AT+GTVAD=zk200,%s,,,,,4,,%s$", cmd["subcommand"], tc)
+		return fmt.Sprintf("AT+GTVAD=zk200,%s,,,,,2,,%s$", cmd["subcommand"], tc)
 	default:
 		return fmt.Sprintf("AT+GTRTO=zk200,%s,,0,,,,,,%s$", cmd["subcommand"], tc)
 	}
