@@ -97,7 +97,7 @@ func handleServe(conn net.Conn) {
 
 		pType, pId, parsed, _ := okaiparser.ParseParams(params)
 
-		// fmt.Printf("pId: %v\nPacket: %v\n", pId, parsed)
+		fmt.Printf("pId: %v\nPacket: %v\n", pId, parsed)
 
 		if !authorized && pId == "GTNCN" {
 			imei := parsed["imei"].(string)
@@ -120,7 +120,7 @@ func handleServe(conn net.Conn) {
 		}
 
 		if pType == "+ACK" {
-			if pId == "GTECC" || pId == "GTRTO" || pId == "GTVAD" || pId == "GTQSS" {
+			if pId == "GTECC" || pId == "GTRTO" || pId == "GTVAD" {
 				cmdID := parsed["cmdID"].(string)
 				fmt.Println(cmdID)
 				receivedCommand := receivedCommands[cmdID]
