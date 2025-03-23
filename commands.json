@@ -82,5 +82,13 @@
     "getLocation": {
         "subcommand": "D",
         "head": "GTRTO"
+    },
+    "cfgDisableBatteryLock": {
+        "subcommand": "0",
+        "head": "GTVAD"
+    },
+    "cfgEnableBatteryLock": {
+        "subcommand": "1",
+        "head": "GTVAD"
     }
 }
