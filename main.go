@@ -141,6 +141,8 @@ func handleServe(conn net.Conn) {
 				_, err := configsColl.InsertOne(ctx, parsed)
 				if err != nil {
 					fmt.Println("Save config failure")
+				} else {
+					fmt.Println("Successfully saved config")
 				}
 			} else {
 				fmt.Println("GTALC is empty")
