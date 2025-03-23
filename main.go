@@ -124,7 +124,7 @@ func handleServe(conn net.Conn) {
 			connection.TotalCount = tc[0:4]
 			authorized = true
 			fmt.Println("succesfully authorized")
-			cfgCmd := okaiparser.CommandBuilder(commands["getConfig"], tc)
+			cfgCmd := okaiparser.CommandBuilder(commands["getConfig"], connection.TotalCount)
 			connection.Conn.Write([]byte(cfgCmd))
 			sendLogTg(fmt.Sprintf("device %s connected", connection.IMEI))
 			continue
@@ -436,18 +436,6 @@ func main() {
 	mg.Seed(mgClient, ctx)
 	scooterColl = mgClient.Database("iot").Collection("okai_scooters")
 	configsColl = mgClient.Database("iot").Collection("okai_configs")
-
-	c, err := configsColl.Find(ctx, bson.M{}, nil)
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-	var ifce []bson.M
-	err = c.All(ctx, &ifce)
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	fmt.Println(ifce)
 
 	connections = make(map[string]*Connection)
 	addr := fmt.Sprintf(":%d", TCP_PORT)
