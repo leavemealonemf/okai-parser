@@ -104,7 +104,7 @@ func handleServe(conn net.Conn) {
 			connection.IMEI = imei
 			connections[imei] = connection
 			tc := parsed["totalCount"].(string)
-			connection.TotalCount = tc[0:4]
+			connection.TotalCount = utils.IncrementHex(tc[0:4])
 			authorized = true
 			fmt.Println("succesfully authorized")
 			continue
@@ -154,7 +154,7 @@ func handleServe(conn net.Conn) {
 
 		if len(parsed) > 0 {
 			tc := parsed["totalCount"].(string)
-			connection.TotalCount = tc[0:4]
+			connection.TotalCount = utils.IncrementHex(tc[0:4])
 			err = insertOneScooter(ctx, parsed)
 			if err == nil {
 				fmt.Println("insert successfully")

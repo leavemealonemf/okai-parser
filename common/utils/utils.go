@@ -50,3 +50,14 @@ func LoadJSON[T any](filename string) (T, error) {
 	}
 	return data, json.Unmarshal(fileData, &data)
 }
+
+func IncrementHex(hexStr string) string {
+	num, err := strconv.ParseUint(hexStr, 16, 16)
+	if err != nil {
+		panic(err)
+	}
+
+	num = (num + 1) & 0xFFFF
+
+	return fmt.Sprintf("%04X", num)
+}
