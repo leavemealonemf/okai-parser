@@ -435,6 +435,18 @@ func main() {
 	scooterColl = mgClient.Database("iot").Collection("okai_scooters")
 	configsColl = mgClient.Database("iot").Collection("okai_configs")
 
+	c, err := configsColl.Find(ctx, bson.A{}, nil)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	var ifce bson.M
+	err = c.All(ctx, &ifce)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	fmt.Println(ifce)
+	return
 	connections = make(map[string]*Connection)
 	addr := fmt.Sprintf(":%d", TCP_PORT)
 
