@@ -149,9 +149,6 @@ func parseBatteryStatusInfo(batteryRaw string) map[string]interface{} {
 }
 
 func CommandBuilder(cmd map[string]string, tc string) string {
-
-	// AT+GTVAD=zk200,0,0,0,0,,,,0215$
-
 	switch cmd["head"] {
 	case "GTRTO":
 		return fmt.Sprintf("AT+GTRTO=zk200,%s,,%d,,,,,,%s$", cmd["subcommand"], 0, tc)

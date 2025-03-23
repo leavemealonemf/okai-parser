@@ -17,6 +17,8 @@ import (
 	"strings"
 	"time"
 
+	magichttp "okai/external"
+
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -60,6 +62,16 @@ var rbtCh *amqp.Channel
 var connections map[string]*Connection
 var receivedCommands map[string]*ReceivedCommand
 
+func sendLogTg(msg string) {
+	tgToken := os.Getenv("TG_TOKEN")
+	chatId := os.Getenv("CHAT_ID")
+	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", tgToken, chatId, msg)
+	_, err := magichttp.POST(url, []byte(""))
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+}
+
 func handleServe(conn net.Conn) {
 	connection := &Connection{
 		Conn: conn,
@@ -71,6 +83,7 @@ func handleServe(conn net.Conn) {
 	authorized := false
 
 	defer func() {
+		sendLogTg(fmt.Sprintf("device %s disconnected", connection.IMEI))
 		abortTCP(connection)
 		conn.Close()
 	}()
@@ -107,6 +120,7 @@ func handleServe(conn net.Conn) {
 			connection.TotalCount = tc[0:4]
 			authorized = true
 			fmt.Println("succesfully authorized")
+			sendLogTg(fmt.Sprintf("device %s connected", connection.IMEI))
 			continue
 		}
 
