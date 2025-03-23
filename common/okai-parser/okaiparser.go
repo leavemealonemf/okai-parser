@@ -55,7 +55,7 @@ func parseMainCfg(params []string) map[string]interface{} {
 			"protocol_version":   params[1],
 			"imei":               params[2],
 			"device_name":        params[3],
-			"vim":                params[4],
+			"vin":                params[4],
 			"qr_code":            params[5],
 			"rs1":                params[6],
 			"task_id":            params[7],
