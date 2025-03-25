@@ -73,7 +73,6 @@ func sendLogTg(msg string) {
 }
 
 func saveScooterConfig() {
-
 }
 
 func handleServe(conn net.Conn) {
@@ -103,6 +102,7 @@ func handleServe(conn net.Conn) {
 			fmt.Println("Received data err:", err.Error())
 			break
 		}
+
 		msg := string(buff)
 
 		if msg[0] != '+' {
@@ -118,16 +118,12 @@ func handleServe(conn net.Conn) {
 
 		if !authorized && pId == "GTNCN" {
 			imei := parsed["imei"].(string)
-			if existingConn, exists := connections[imei]; exists {
-				fmt.Println("Device already connected:", imei)
-				existingConn.Conn.Close() // Close old connection
-			}
 			connection.IMEI = imei
 			connections[imei] = connection
 			tc := parsed["totalCount"].(string)
 			connection.TotalCount = tc[0:4]
 			authorized = true
-			fmt.Println("succesfully authorized")
+			log.Println("succesfully authorized")
 			cfgCmd := okaiparser.CommandBuilder(commands["getConfig"], connection.TotalCount)
 			connection.Conn.Write([]byte(cfgCmd))
 			sendLogTg(fmt.Sprintf("device %s connected", connection.IMEI))
@@ -189,7 +185,8 @@ func handleServe(conn net.Conn) {
 			totalCount := params[6]
 			cmd := fmt.Sprintf("+SACK:GTHBD,%s,%s", protoVer, totalCount)
 			conn.Write([]byte(cmd))
-			fmt.Println("send heartbeat ack:", cmd)
+			log.Println("send heartbeat ack:", cmd)
+			continue
 		}
 
 		if len(parsed) > 0 {
