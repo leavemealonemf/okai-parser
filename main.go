@@ -83,7 +83,7 @@ func handleServe(conn net.Conn) {
 
 	buff := make([]byte, BUFF_SIZE)
 
-	authorized := false
+	isFirstConn := true
 
 	defer func() {
 		sendLogTg(fmt.Sprintf("device %s disconnected", connection.IMEI))
@@ -92,7 +92,7 @@ func handleServe(conn net.Conn) {
 	}()
 
 	for {
-		if authorized && connections[connection.IMEI] == nil {
+		if !isFirstConn && connections[connection.IMEI] == nil {
 			break
 		}
 
@@ -116,22 +116,18 @@ func handleServe(conn net.Conn) {
 
 		// fmt.Printf("pId: %v\nPacket: %v\n", pId, parsed)
 
-		if !authorized && pId == "GTNCN" {
+		if isFirstConn && pId == "GTNCN" {
 			imei := parsed["imei"].(string)
 			connection.IMEI = imei
 			connections[imei] = connection
 			tc := parsed["totalCount"].(string)
 			connection.TotalCount = tc[0:4]
-			authorized = true
+			isFirstConn = false
 			log.Println("succesfully authorized")
 			cfgCmd := okaiparser.CommandBuilder(commands["getConfig"], connection.TotalCount)
 			connection.Conn.Write([]byte(cfgCmd))
 			sendLogTg(fmt.Sprintf("device %s connected", connection.IMEI))
 			continue
-		}
-
-		if !authorized {
-			break
 		}
 
 		// get and save config
@@ -154,6 +150,16 @@ func handleServe(conn net.Conn) {
 		// if pType == "+RESP" && pId == "GTALM" {
 		// 	fmt.Println("RAW ALARM EVENT PACKET", string(buff))
 		// }
+
+		// heartbeat handshake
+		if pType == "+ACK" && pId == "GTHBD" {
+			protoVer := params[1]
+			totalCount := params[6]
+			cmd := fmt.Sprintf("+SACK:GTHBD,%s,%s", protoVer, totalCount)
+			conn.Write([]byte(cmd))
+			log.Println("send heartbeat ack:", cmd)
+			continue
+		}
 
 		if pType == "+ACK" {
 			if pId == "GTECC" || pId == "GTRTO" || pId == "GTVAD" {
@@ -178,16 +184,6 @@ func handleServe(conn net.Conn) {
 		// if pType == "+RESP" && pId == "GTFRI" {
 		// 	fmt.Println("RAW GTFRI PACKET:", string(buff))
 		// }
-
-		// heartbeat handshake
-		if pType == "+ACK" && pId == "GTHBD" {
-			protoVer := params[1]
-			totalCount := params[6]
-			cmd := fmt.Sprintf("+SACK:GTHBD,%s,%s", protoVer, totalCount)
-			conn.Write([]byte(cmd))
-			log.Println("send heartbeat ack:", cmd)
-			continue
-		}
 
 		if len(parsed) > 0 {
 			tc := parsed["totalCount"].(string)
