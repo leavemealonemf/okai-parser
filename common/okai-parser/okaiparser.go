@@ -49,7 +49,7 @@ func HeadInfo(head string) (string, string) {
 
 func parseMainCfg(params []string) map[string]interface{} {
 	packet := map[string]interface{}{
-		"_ts":  time.Now().Unix(),
+		"_ts":  time.Now().UnixMicro(),
 		"imei": params[2],
 		"head": map[string]interface{}{
 			"protocol_version":   params[1],
@@ -266,7 +266,7 @@ func parseBasePacket(params []string) map[string]interface{} {
 		"genTime":                 params[35],
 		"totalCount":              params[36],
 		"online":                  true,
-		"_ts":                     time.Now().Unix(),
+		"_ts":                     time.Now().UnixMicro(),
 		"charge":                  params[34],
 	}
 
