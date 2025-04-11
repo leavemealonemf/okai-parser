@@ -270,14 +270,34 @@ func parseBasePacket(params []string) map[string]interface{} {
 		"charge":                  params[34],
 	}
 
-	// rawGNSSInfo := params[17]
+	rawGNSSInfo := params[17]
+	gnss := parseGNSSInfo(rawGNSSInfo)
+	if gnss != nil {
+		packet["gnssInfo"] = gnss
+	} else {
+		packet["gnssInfo"] = ""
+	}
+
 	rawEcuInfo := params[33]
 	ecuInfo := parseEcu(rawEcuInfo)
 	packet["ecuInfo"] = ecuInfo
-	packet["gnssInfo"] = params[17]
-	fmt.Println("RAW GNSS_INFO", params[17])
 
 	return packet
+}
+
+func parseGNSSInfo(raw string) map[string]interface{} {
+	if len(raw) == 0 {
+		return nil
+	}
+	parts := strings.Split(raw, "&")
+	return map[string]interface{}{
+		"max_gnss_signal":          parts[0],
+		"gnss_sat":                 parts[1],
+		"gnss_lon":                 parts[2],
+		"gnss_lat":                 parts[3],
+		"gnss_init_point_status":   parts[4],
+		"gnss_horizontal_accuracy": parts[5],
+	}
 }
 
 func parseEcu(raw string) map[string]interface{} {
