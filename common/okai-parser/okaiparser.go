@@ -361,6 +361,8 @@ func CommandBuilder(cmd map[string]string, tc string) string {
 		return fmt.Sprintf("AT+GTVAD=zk200,%s,,,,,2,,%s$", cmd["subcommand"], tc)
 	case "GTQSS":
 		return fmt.Sprintf("AT+GTQSS=zk200,,,,,0,,iot-socket.okai.co,14010,,,,,,,,%s$", tc)
+	case "GTXWM":
+		return fmt.Sprintf("AT+GTXWM=zk200,%s,03,03,,,,%s$", cmd["subcommand"], tc)
 	default:
 		return fmt.Sprintf("AT+GTRTO=zk200,%s,,0,,,,,,%s$", cmd["subcommand"], tc)
 	}

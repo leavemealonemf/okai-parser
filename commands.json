@@ -98,5 +98,21 @@
     "getConfig": {
         "subcommand": "2",
         "head": "GTRTO"
+    },
+    "setNormalMode": {
+        "subcommand": "1",
+        "head": "GTXWM"
+    },
+    "setTransportMode": {
+        "subcommand": "2",
+        "head": "GTXWM"
+    },
+    "setTestMode": {
+        "subcommand": "3",
+        "head": "GTXWM"
+    },
+    "setShippingMode": {
+        "subcommand": "4",
+        "head": "GTXWM"
     }
 }
