@@ -162,7 +162,7 @@ func handleServe(conn net.Conn) {
 		}
 
 		if pType == "+ACK" {
-			if pId == "GTECC" || pId == "GTRTO" || pId == "GTVAD" {
+			if pId == "GTECC" || pId == "GTRTO" || pId == "GTVAD" || pId == "GTXWM" {
 				cmdID := parsed["cmdID"].(string)
 				fmt.Println(cmdID)
 				receivedCommand := receivedCommands[cmdID]
