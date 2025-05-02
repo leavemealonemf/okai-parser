@@ -31,6 +31,11 @@ func ParseParams(params []string) (string, string, map[string]interface{}, error
 			"cmdID": params[5],
 		}
 		return pktType, pktId, packet, nil
+	} else if pktType == "+ACK" && pktId == "GTXWM" {
+		packet := map[string]interface{}{
+			"cmdID": params[5],
+		}
+		return pktType, pktId, packet, nil
 	} else if pktType == "+RESP" && pktId == "GTALC" {
 		packet := parseMainCfg(params)
 		return pktType, pktId, packet, nil

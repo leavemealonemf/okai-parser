@@ -162,7 +162,7 @@ func handleServe(conn net.Conn) {
 		}
 
 		if pType == "+ACK" {
-			if pId == "GTECC" || pId == "GTRTO" || pId == "GTVAD" {
+			if pId == "GTECC" || pId == "GTRTO" || pId == "GTVAD" || pId == "GTXWM" {
 				cmdID, ok := parsed["cmdID"].(string)
 				if !ok {
 					log.Println("Failed to convert cmdID")
@@ -173,8 +173,6 @@ func handleServe(conn net.Conn) {
 				if receivedCommand != nil {
 					receivedCommand.ExecChannel <- true
 				}
-			} else if pId == "GTXWM" {
-				fmt.Println(parsed)
 			}
 			continue
 		}
