@@ -1,118 +1,147 @@
 {
     "unlock": {
         "subcommand": "F",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Разблокировать"
     },
     "lock": {
         "subcommand": "10",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Заблокировать"
     },
     "turnOffHeadL": {
         "subcommand": "A",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Выключить передний свет"
     },
     "turnOnHeadL": {
         "subcommand": "9",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Включить передний свет"
     },
     "turnOffTailL": {
         "subcommand": "12",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Выключить задний свет"
     },
     "turnOnTailL": {
         "subcommand": "11",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Включить задний свет"
     },
     "rebootDevice": {
         "subcommand": "3",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Перезагрузить модуль"
     },
     "clearCache": {
         "subcommand": "50",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Очистить кэш"
     },
     "unlockBatteryLock": {
         "subcommand": "13",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Разблокировать замок батареи"
     },
     "lockBatteryLock": {
         "subcommand": "14",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Заблокировать замок батареи"
     },
     "openStraightRodLock": {
         "subcommand": "1E",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Разблокировать замок"
     },
     "closeStraightRodLock": {
         "subcommand": "1F",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Заблокировать замок"
     },
     "playAlarm": {
         "subcommand": "B",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Тревога"
     },
     "playCustomPrompts": {
         "subcommand": "22",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Пользовательский звук"
     },
     "locateVehicle": {
         "subcommand": "C",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Найти устройство"
     },
     "setEcuSpeed5": {
         "subcommand": "5",
-        "head": "GTECC"
+        "head": "GTECC",
+        "humanName": "Установить ограничение скорости 5 км/ч"
     },
     "setEcuSpeed10": {
         "subcommand": "10",
-        "head": "GTECC"
+        "head": "GTECC",
+        "humanName": "Установить ограничение скорости 10 км/ч"
     },
     "setEcuSpeed15": {
         "subcommand": "15",
-        "head": "GTECC"
+        "head": "GTECC",
+        "humanName": "Установить ограничение скорости 15 км/ч"
     },
     "setEcuSpeed20": {
         "subcommand": "20",
-        "head": "GTECC"
+        "head": "GTECC",
+        "humanName": "Установить ограничение скорости 20 км/ч"
     },
     "setEcuSpeed25": {
         "subcommand": "25",
-        "head": "GTECC"
+        "head": "GTECC",
+        "humanName": "Установить ограничение скорости 25 км/ч"
     },
     "getLocation": {
         "subcommand": "D",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Получить местоположение"
     },
     "cfgDisableBatteryLock": {
         "subcommand": "0",
-        "head": "GTVAD"
+        "head": "GTVAD",
+        "humanName": "Отключить блокировку замка батареи"
     },
     "cfgEnableBatteryLock": {
         "subcommand": "1",
-        "head": "GTVAD"
+        "head": "GTVAD",
+        "humanName": "Включить блокировку замка батареи"
     },
     "configureNetwork": {
         "subcommand": "1",
-        "head": "GTQSS"
+        "head": "GTQSS",
+        "humanName": "Настроить сеть"
     },
     "getConfig": {
         "subcommand": "2",
-        "head": "GTRTO"
+        "head": "GTRTO",
+        "humanName": "Получить конфиг"
     },
     "setNormalMode": {
         "subcommand": "1",
-        "head": "GTXWM"
+        "head": "GTXWM",
+        "humanName": "Установить нормальный режим"
     },
     "setTransportMode": {
         "subcommand": "2",
-        "head": "GTXWM"
+        "head": "GTXWM",
+        "humanName": "Установить режим транспортировки"
     },
     "setTestMode": {
         "subcommand": "3",
-        "head": "GTXWM"
+        "head": "GTXWM",
+        "humanName": "Установить тестовый режим"
     },
     "setShippingMode": {
         "subcommand": "4",
-        "head": "GTXWM"
+        "head": "GTXWM",
+        "humanName": "Установить режим перевозки"
     }
 }

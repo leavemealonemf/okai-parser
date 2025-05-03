@@ -290,6 +290,7 @@ func showConnections() {
 }
 
 var scooterColl *mongo.Collection
+var cmdsColl *mongo.Collection
 var configsColl *mongo.Collection
 var ctx = context.TODO()
 
@@ -344,6 +345,8 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 				ExecChannel: cmdChan,
 			}
 
+			mg.Insert(ctx, cmdsColl, recievedCmd)
+
 			receivedCommands[token] = recievedCmd
 			// mg.Insert(ctx, cmdsColl, recievedCmd)
 			c.Conn.Write([]byte(bCommand))
@@ -351,13 +354,19 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 			select {
 			case success := <-cmdChan:
 				if success {
+					recievedCmd.Status = "success"
+					mg.Insert(ctx, cmdsColl, recievedCmd)
 					w.Write([]byte(fmt.Sprintf("Command %s executed successfully", cmd)))
 					delete(receivedCommands, token)
 				} else {
+					recievedCmd.Status = "failed"
+					mg.Insert(ctx, cmdsColl, recievedCmd)
 					http.Error(w, "Command execution failed", http.StatusInternalServerError)
 					delete(receivedCommands, token)
 				}
 			case <-time.After(60 * time.Second):
+				recievedCmd.Status = "failed"
+				mg.Insert(ctx, cmdsColl, recievedCmd)
 				http.Error(w, "Command execution timed out", http.StatusRequestTimeout)
 				delete(receivedCommands, token)
 			}
@@ -436,6 +445,7 @@ func main() {
 	mg.Seed(mgClient, ctx)
 	scooterColl = mgClient.Database("iot").Collection("okai_scooters")
 	configsColl = mgClient.Database("iot").Collection("okai_configs")
+	cmdsColl = mgClient.Database("iot").Collection("okai_commands")
 
 	connections = make(map[string]*Connection)
 	addr := fmt.Sprintf(":%d", TCP_PORT)
