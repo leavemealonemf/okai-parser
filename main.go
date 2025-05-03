@@ -345,13 +345,15 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 				ExecChannel: cmdChan,
 			}
 
-			mg.Insert(ctx, cmdsColl, recievedCmd)
-
 			receivedCommands[token] = recievedCmd
-			// mg.Insert(ctx, cmdsColl, recievedCmd)
+			mg.Insert(ctx, cmdsColl, recievedCmd)
 			c.Conn.Write([]byte(bCommand))
 
-			f := bson.M{"_ts": recievedCmd.ServerTime}
+			f := bson.D{
+				{Key: "$set", Value: bson.D{
+					{Key: "_ts", Value: recievedCmd.ServerTime},
+				}},
+			}
 
 			select {
 			case success := <-cmdChan:
