@@ -300,6 +300,14 @@ func initCommands() {
 	commands, _ = utils.LoadJSON[map[string]map[string]string]("commands.json")
 }
 
+func updCmdQuery(status string) bson.D {
+	return bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "status", Value: status},
+		}},
+	}
+}
+
 func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		body, err := io.ReadAll(r.Body)
@@ -349,28 +357,21 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 			mg.Insert(ctx, cmdsColl, recievedCmd)
 			c.Conn.Write([]byte(bCommand))
 
-			f := bson.D{
-				{Key: "$set", Value: bson.D{
-					{Key: "_ts", Value: recievedCmd.ServerTime},
-				}},
-			}
+			f := bson.M{"_ts": recievedCmd.ServerTime}
 
 			select {
 			case success := <-cmdChan:
 				if success {
-					recievedCmd.Status = "success"
-					mg.UpdOne(ctx, cmdsColl, f, recievedCmd)
+					mg.UpdOne(ctx, cmdsColl, f, updCmdQuery("success"))
 					w.Write([]byte(fmt.Sprintf("Command %s executed successfully", cmd)))
 					delete(receivedCommands, token)
 				} else {
-					recievedCmd.Status = "failed"
-					mg.UpdOne(ctx, cmdsColl, f, recievedCmd)
+					mg.UpdOne(ctx, cmdsColl, f, updCmdQuery("failed"))
 					http.Error(w, "Command execution failed", http.StatusInternalServerError)
 					delete(receivedCommands, token)
 				}
 			case <-time.After(60 * time.Second):
-				recievedCmd.Status = "failed"
-				mg.UpdOne(ctx, cmdsColl, f, recievedCmd)
+				mg.UpdOne(ctx, cmdsColl, f, updCmdQuery("failed"))
 				http.Error(w, "Command execution timed out", http.StatusRequestTimeout)
 				delete(receivedCommands, token)
 			}
