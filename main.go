@@ -351,22 +351,24 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 			// mg.Insert(ctx, cmdsColl, recievedCmd)
 			c.Conn.Write([]byte(bCommand))
 
+			f := bson.M{"_ts": recievedCmd.ServerTime}
+
 			select {
 			case success := <-cmdChan:
 				if success {
 					recievedCmd.Status = "success"
-					mg.Insert(ctx, cmdsColl, recievedCmd)
+					mg.UpdOne(ctx, cmdsColl, f, recievedCmd)
 					w.Write([]byte(fmt.Sprintf("Command %s executed successfully", cmd)))
 					delete(receivedCommands, token)
 				} else {
 					recievedCmd.Status = "failed"
-					mg.Insert(ctx, cmdsColl, recievedCmd)
+					mg.UpdOne(ctx, cmdsColl, f, recievedCmd)
 					http.Error(w, "Command execution failed", http.StatusInternalServerError)
 					delete(receivedCommands, token)
 				}
 			case <-time.After(60 * time.Second):
 				recievedCmd.Status = "failed"
-				mg.Insert(ctx, cmdsColl, recievedCmd)
+				mg.UpdOne(ctx, cmdsColl, f, recievedCmd)
 				http.Error(w, "Command execution timed out", http.StatusRequestTimeout)
 				delete(receivedCommands, token)
 			}
