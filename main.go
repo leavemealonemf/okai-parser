@@ -15,6 +15,7 @@ import (
 	"okai/rabbit"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	magichttp "okai/external"
@@ -61,6 +62,7 @@ var rbtCh *amqp.Channel
 
 var connections map[string]*Connection
 var receivedCommands map[string]*ReceivedCommand
+var receivedCommandsMutex sync.RWMutex
 
 func sendLogTg(msg string) {
 	tgToken := os.Getenv("TG_TOKEN")
@@ -341,7 +343,9 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 			token := c.TotalCount
 
 			bCommand := okaiparser.CommandBuilder(cmdInfo, token)
-			cmdChan := make(chan bool)
+			cmdChan := make(chan bool, 1)
+
+			defer close(cmdChan)
 
 			recievedCmd := &ReceivedCommand{
 				ServerTime:  time.Now().UnixMicro(),
@@ -353,7 +357,10 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 				ExecChannel: cmdChan,
 			}
 
+			receivedCommandsMutex.Lock()
 			receivedCommands[token] = recievedCmd
+			receivedCommandsMutex.Unlock()
+
 			mg.Insert(ctx, cmdsColl, recievedCmd)
 			c.Conn.Write([]byte(bCommand))
 
@@ -361,6 +368,7 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 
 			select {
 			case success := <-cmdChan:
+				receivedCommandsMutex.Lock()
 				if success {
 					mg.UpdOne(ctx, cmdsColl, f, updCmdQuery("success"))
 					w.Write([]byte(fmt.Sprintf("Command %s executed successfully", cmd)))
@@ -370,10 +378,13 @@ func HTTPCommandHandler(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, "Command execution failed", http.StatusInternalServerError)
 					delete(receivedCommands, token)
 				}
+				receivedCommandsMutex.Unlock()
 			case <-time.After(60 * time.Second):
+				receivedCommandsMutex.Lock()
 				mg.UpdOne(ctx, cmdsColl, f, updCmdQuery("failed"))
 				http.Error(w, "Command execution timed out", http.StatusRequestTimeout)
 				delete(receivedCommands, token)
+				receivedCommandsMutex.Unlock()
 			}
 
 		} else {
